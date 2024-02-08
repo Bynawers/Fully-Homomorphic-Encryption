@@ -10,9 +10,9 @@ import java.util.Random;
 public class Encrypt {
 
     private Integer[] publicKey;
-    private Integer privateKey;
+    private Integer privateKey; 
 
-    private Integer c;
+    private BigInteger c;
     
     public Encrypt(Integer[] publicKey, Integer message, Integer privateKey) {
         this.publicKey = publicKey;
@@ -50,7 +50,7 @@ public class Encrypt {
         return tmp;
     }
 
-    public Integer getC() {
+    public BigInteger getC() {
         return c;
     }
 
@@ -88,7 +88,7 @@ public class Encrypt {
         return subset;
     }
 
-    private Integer listToInteger(List<Integer> encryptedMessage) {
+    private BigInteger listToInteger(List<Integer> encryptedMessage) {
         StringBuilder builder = new StringBuilder();
 
         for (Integer chiffre : encryptedMessage) {
@@ -106,6 +106,6 @@ public class Encrypt {
 
         System.out.println(res);
 
-        return 0;
+        return listInt;
     }
 }
