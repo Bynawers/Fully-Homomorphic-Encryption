@@ -7,6 +7,8 @@ public final class App {
         //Encrypt encrypt = new Encrypt(keys.getPublicKey(), 24, keys.getPrivateKey());
         //Decrypt decrypt = new Decrypt(keys.getPrivateKey(), encrypt.getC());
 
+        //System.out.print(keys);
+
     }
 
 }

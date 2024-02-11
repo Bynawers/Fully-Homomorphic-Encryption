@@ -1,6 +1,7 @@
 package com;
 
 import java.util.Random;
+import java.security.SecureRandom;
 
 public class Keygen {
 
@@ -29,20 +30,32 @@ public class Keygen {
 
         int randomNumber = 0;
 
-        while(randomNumber % 2 == 0) {
-            randomNumber = random.nextInt(upperBound - lowerBound) + lowerBound;
+        while(randomNumber % 2 == 0 || randomNumber < lowerBound || randomNumber >= upperBound ) {
+
+            StringBuilder privateKeyBinary = new StringBuilder();
+            
+            //pour vérifier la taille de la clé privé
+            for(int i = 0; i < Parameters.PRIVATE_KEY_LENGTH; i++) {
+                int bit = random.nextInt(2);
+                privateKeyBinary.append(bit);
+            }
+
+            String privateKeyBinaryString = privateKeyBinary.toString ();
+            //System.out.println("private key string = " + privateKeyBinaryString);
+            randomNumber = Integer.parseInt(privateKeyBinaryString, 2 );
+            
         }
 
-        System.out.println("private key = " + randomNumber);
+        System.out.println("private key = " + randomNumber +"\n");
         return randomNumber;
     }
 
     private Integer[] publicKeyGen() {
-        Integer[] x = new Integer[Parameters.PUBLIC_KEY_INTEGER_NUMBER];
+        Integer[] x = new Integer[Parameters.PUBLIC_KEY_INTEGER_NUMBER+1];
         int indexX0 = 0;
         int tmp = 0;
 
-        for(int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
+        for(int i = 0; i <= Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
             x[i] = distribution(this.privateKey);
             if (x[indexX0] < x[i]) {
                 indexX0 = i;
@@ -52,9 +65,14 @@ public class Keygen {
         x[indexX0] = x[0];
         x[0] = tmp;
 
+        
         if (x[indexX0] % 2 == 0) {
             return publicKeyGen();
         }
+
+        /*
+            le cas ou rp(x0) est impaire
+        */
 
         displayPublicKey(x);
 
@@ -65,19 +83,33 @@ public class Keygen {
     }
 
     public Integer distribution(Integer privateKey) {
+      
+      while(true) { 
         Random random = new Random();
-
+      
         int lowerBound = 0;
         int upperBound = (int) Math.floor((Math.pow(2, Parameters.PUBLIC_KEY_INTEGER_LENGTH)) / privateKey);
 
+     
         Integer q = random.nextInt(upperBound - lowerBound) + lowerBound;
+
+        System.out.println("q = " +q);
 
         lowerBound = -(int) Math.pow(2, Parameters.NOISE_LENGTH);
         upperBound = (int) Math.pow(2, Parameters.NOISE_LENGTH);
 
         Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
 
-        return privateKey * q + r;
+        System.out.println("r = " + r);
+        
+        int nb = privateKey*q+r;
+
+        String binaryDistribution = Integer.toBinaryString(nb);
+
+        if (binaryDistribution.length() == Parameters.PUBLIC_KEY_INTEGER_LENGTH) {
+            return privateKey * q + r;
+        }    
+      } 
     }
 
     private void displayPublicKey(Integer[] x) {
