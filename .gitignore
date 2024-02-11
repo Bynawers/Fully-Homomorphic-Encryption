@@ -1,0 +1,16 @@
+# Ignore les fichiers générés par Maven
+target/
+
+
+# Ignorer les fichiers d'exécution Java
+*.class
+*.jar
+
+
+# Ignorer les fichiers générés par Visual Studio Code
+.vscode/
+
+# Ignorer les fichiers de configuration de l'IDE
+.settings/
+.classpath
+.project
