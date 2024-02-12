@@ -55,7 +55,7 @@ public class Keygen {
         int indexX0 = 0;
         int tmp = 0;
 
-        for(int i = 0; i <= Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
+        for(int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER + 1; i++) {
             x[i] = distribution(this.privateKey);
             if (x[indexX0] < x[i]) {
                 indexX0 = i;
@@ -67,6 +67,7 @@ public class Keygen {
 
         
         if (x[indexX0] % 2 == 0) {
+            System.out.println("x0 paire");
             return publicKeyGen();
         }
 
@@ -79,7 +80,7 @@ public class Keygen {
         System.out.print("public key = ");
         System.out.println(publicKeyToInt(x));
 
-        return x;
+        return x;     
     }
 
     public Integer distribution(Integer privateKey) {
@@ -93,14 +94,10 @@ public class Keygen {
      
         Integer q = random.nextInt(upperBound - lowerBound) + lowerBound;
 
-        System.out.println("q = " +q);
-
         lowerBound = -(int) Math.pow(2, Parameters.NOISE_LENGTH);
         upperBound = (int) Math.pow(2, Parameters.NOISE_LENGTH);
 
         Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
-
-        System.out.println("r = " + r);
         
         int nb = privateKey*q+r;
 

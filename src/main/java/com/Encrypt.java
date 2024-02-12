@@ -13,23 +13,32 @@ public class Encrypt {
     private Integer privateKey; 
 
     private BigInteger c;
+
+    private List<Integer> encryptedMessage;
+
+    private Integer nbrFirstmod;
     
     public Encrypt(Integer[] publicKey, Integer message, Integer privateKey) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
-        List<Integer> encryptedMessage = new ArrayList<>();
+        this.encryptedMessage = new ArrayList<>();
 
-        for (int i = 0; i < Integer.SIZE; i++) {
-            int bit = (message >> i) & 1;
+        String binaryMessage = Integer.toBinaryString(message);
+
+        System.out.println("Le message est :" + binaryMessage);
+        int j = binaryMessage.length()-1;
+        for (int i = 0; i < binaryMessage.length(); i++) {
+            int bit = Character.getNumericValue(binaryMessage.charAt(i));
             //System.out.println("bit [" + i + "] = " + bit);
             Integer encryptedBit = EncryptBit(bit);
-            System.out.println("bit encrypted [" + i + "] = " + encryptedBit);
+            System.out.println("bit encrypted [" + j + "] = " + encryptedBit);
             encryptedMessage.add(encryptedBit);
+            j--;
         }
 
         c = listToInteger(encryptedMessage);
         
-        System.out.println(getC());
+        System.out.println("Le chiffré est : " + getC());
     }
 
     public Integer EncryptBit(Integer bit) {
@@ -43,7 +52,9 @@ public class Encrypt {
 
         Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
 
-        Integer tmp = bit + 2*r + 2*sumRandomSubsetPublicKey(randomSubstet) % publicKey[0];
+        this.nbrFirstmod = 2*sumRandomSubsetPublicKey(randomSubstet);     //  Attention il y a un problème ici
+        System.out.println("Nbrfirstmod = " + this.nbrFirstmod);
+        Integer tmp = bit + 2*r + this.nbrFirstmod;
         if (tmp < 0) {
             tmp += publicKey[0];
         }
@@ -52,6 +63,10 @@ public class Encrypt {
 
     public BigInteger getC() {
         return c;
+    }
+
+    public List<Integer> getencryptedMessage(){
+        return this.encryptedMessage;
     }
 
     private Integer sumRandomSubsetPublicKey(List<Integer> randomSubset) {
@@ -69,15 +84,15 @@ public class Encrypt {
 
         List<Integer> numbers = new ArrayList<>();
 
-        for (int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
+        for (int i = 1; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER + 1; i++) {
             numbers.add(i);
         }
 
         Collections.shuffle(numbers);
 
         Random random = new Random();
-        int subsetSize = random.nextInt(Parameters.PUBLIC_KEY_INTEGER_NUMBER + 1);
-        List<Integer> subset = numbers.subList(0, subsetSize);
+        int subsetSize = random.nextInt(Parameters.PUBLIC_KEY_INTEGER_NUMBER) + 1 ;
+        List<Integer> subset = numbers.subList(1, subsetSize);
 
         /* DEBUG
         System.out.println("----SUBSET---");
@@ -107,5 +122,9 @@ public class Encrypt {
         System.out.println(res);
 
         return listInt;
+    }
+
+    public Integer getNbrFirstmod () {
+        return this.nbrFirstmod;
     }
 }
