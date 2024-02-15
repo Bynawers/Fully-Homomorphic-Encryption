@@ -18,8 +18,8 @@ public class Decrypt {
             System.out.print(messageBit);
             messageBinaryBuilder.add(messageBit);
         }
-        this.message = (cipher%privateKey) % 2;
-        System.out.println(message);
+        //this.message = (cipher%privateKey) % 2;
+        //System.out.println(message);
     }
 
     public Integer getMessage() {

@@ -3,6 +3,8 @@ package com;
 import java.util.ArrayList;
 
 public class Evaluate {
+
+    ArrayList<Integer> addition;
     
     public Evaluate(Integer[] publicKey, ArrayList<Instruction> circuit, ArrayList<Integer> cipherBinary) {
         System.out.println("Evaluate");
@@ -11,10 +13,33 @@ public class Evaluate {
                 int bit = (component >> i) & 1;
                 System.out.print(bit);
             }
-            //for (Instruction instruction: circuit) {
-
-            //}
         }
+    }
+
+    public Evaluate(ArrayList<Integer> c1, ArrayList<Integer> c2) {
+        addition = test(c1, c2);
+    }
+
+    public ArrayList<Integer> test(ArrayList<Integer> c1, ArrayList<Integer> c2) {
+        System.out.println("Evaluate");
+        ArrayList<Integer> encryptedAdditionBuilder = new ArrayList<>();
+
+        for (int i = 0; i < c2.size(); i++) {
+            if (c1.size() == i) {
+                break;
+            }
+            //System.out.print(c2.get(i) + " + ");
+            //System.out.print(c2.get(i) + " || ");
+            encryptedAdditionBuilder.add(c2.get(i) + c1.get(i));
+        }
+        return encryptedAdditionBuilder;
+    }
+
+    public void display() {
+        for (Integer bit: addition) {
+            System.out.print(bit + " ");
+        }
+        System.out.println();
     }
 }
 
