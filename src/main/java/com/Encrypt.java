@@ -3,96 +3,62 @@ package com;
 import java.math.BigInteger;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class Encrypt {
 
     private Integer[] publicKey;
     private Integer privateKey; 
+    private Integer message;
+    private ArrayList<Integer> encryptedMessageBinary = new ArrayList<>();
 
-    private BigInteger c;
+    private BigInteger encryptedMessage;
     
     public Encrypt(Integer[] publicKey, Integer message, Integer privateKey) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
-        List<Integer> encryptedMessage = new ArrayList<>();
+        this.message = message;
+        ArrayList<Integer> encryptedMessageBuilder = new ArrayList<>();
+        Integer encryptedBit;
 
-        for (int i = 0; i < Integer.SIZE; i++) {
+        System.out.println("\nMessage : \n"+ message);
+        System.out.println("\nMessage Binary : ");
+        for (int i = Integer.SIZE; i >= 0 ; i--) {
             int bit = (message >> i) & 1;
-            //System.out.println("bit [" + i + "] = " + bit);
-            Integer encryptedBit = EncryptBit(bit);
-            System.out.println("bit encrypted [" + i + "] = " + encryptedBit);
-            encryptedMessage.add(encryptedBit);
+            System.out.print(bit);
+            encryptedBit = EncryptBit(bit);
+            encryptedMessageBuilder.add(encryptedBit);
         }
+        System.out.println();
 
-        c = listToInteger(encryptedMessage);
-        
-        System.out.println(getC());
+        encryptedMessage = listToInteger(encryptedMessageBuilder);
+        this.encryptedMessageBinary = encryptedMessageBuilder;
+        System.out.println("\nCipher Components: ");
+        displayEncrypted();
     }
 
     public Integer EncryptBit(Integer bit) {
 
         Random random = new Random();
-            
-        List<Integer> randomSubstet = randomSubset();
 
-        Integer lowerBound = -(int) Math.pow(2, Parameters.NOISE_LENGTH);
-        Integer upperBound = (int) Math.pow(2, Parameters.NOISE_LENGTH);
+        Integer lambda = random.nextInt(Parameters.VA_SECURITY);
+        Integer r = random.nextInt(Math.abs(privateKey/4 - 1));
 
-        Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
+        Integer encryptedBit = bit + 2*r + lambda*privateKey;
 
-        Integer tmp = bit + 2*r + 2*sumRandomSubsetPublicKey(randomSubstet) % publicKey[0];
-        if (tmp < 0) {
-            tmp += publicKey[0];
-        }
-        return tmp;
+        encryptedMessageBinary.add(encryptedBit);
+
+        return encryptedBit;
     }
 
-    public BigInteger getC() {
-        return c;
+    public ArrayList<Integer> encryptedMessageBinary() {
+        return encryptedMessageBinary;
     }
 
-    private Integer sumRandomSubsetPublicKey(List<Integer> randomSubset) {
-        Integer sum = 0;
-        for (Integer index: randomSubset) {
-            sum += publicKey[index];
-            //System.out.println("publicKey["+index+"] = " + publicKey[index]);
-
-        }
-        //System.out.println("SUM = "+sum);
-        return sum;
-    }
-
-    private List<Integer> randomSubset() {
-
-        List<Integer> numbers = new ArrayList<>();
-
-        for (int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
-            numbers.add(i);
-        }
-
-        Collections.shuffle(numbers);
-
-        Random random = new Random();
-        int subsetSize = random.nextInt(Parameters.PUBLIC_KEY_INTEGER_NUMBER + 1);
-        List<Integer> subset = numbers.subList(0, subsetSize);
-
-        /* DEBUG
-        System.out.println("----SUBSET---");
-        for (Integer elem: subset) {
-            System.out.println(elem);
-        }*/
-
-        return subset;
-    }
-
-    private BigInteger listToInteger(List<Integer> encryptedMessage) {
+    private BigInteger listToInteger(ArrayList<Integer> encryptedMessageBit) {
         StringBuilder builder = new StringBuilder();
 
-        for (Integer chiffre : encryptedMessage) {
-            System.out.println(chiffre);
+        for (Integer chiffre : encryptedMessageBit) {
             builder.append(chiffre);
         }
 
@@ -100,12 +66,15 @@ public class Encrypt {
 
         BigInteger listInt = new BigInteger(listString);
 
-        System.out.println(listInt);
-
         BigInteger res = listInt.remainder(BigInteger.valueOf(privateKey));
 
-        System.out.println(res);
-
         return listInt;
+    }
+
+    public void displayEncrypted() {
+        for (Integer bit: this.encryptedMessageBinary) {
+            System.out.print(bit + " ");
+        }
+        System.out.println();
     }
 }

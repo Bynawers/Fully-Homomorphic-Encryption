@@ -33,7 +33,7 @@ public class Keygen {
             randomNumber = random.nextInt(upperBound - lowerBound) + lowerBound;
         }
 
-        System.out.println("private key = " + randomNumber);
+        System.out.println("private key : " + randomNumber);
         return randomNumber;
     }
 
@@ -58,7 +58,7 @@ public class Keygen {
 
         displayPublicKey(x);
 
-        System.out.print("public key = ");
+        System.out.print("public key : ");
         System.out.println(publicKeyToInt(x));
 
         return x;
@@ -77,11 +77,11 @@ public class Keygen {
 
         Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
 
-        return privateKey * q + r;
+        return  Math.abs(privateKey * q + r);
     }
 
     private void displayPublicKey(Integer[] x) {
-        System.out.print("Integer Public key = ");
+        System.out.print("Integer Public key : ");
         for (int i = 0; i < x.length; i++) {
             System.out.print(x[i] + " | ");
         }

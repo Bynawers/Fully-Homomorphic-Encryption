@@ -1,18 +1,29 @@
 package com;
 
+import java.util.ArrayList;
+
 public class Decrypt {
 
-    private Integer plain;
+    private Integer message;
     private Integer privateKey;
     private Integer cipher;
     
-    public Decrypt(Integer privateKey, Integer cipher) {
-        this.plain = (cipher%privateKey) % 2;
-        System.out.println(plain);
+    public Decrypt(Integer privateKey, ArrayList<Integer> encryptedMessageBinary) {
+        ArrayList<Integer> messageBinaryBuilder = new ArrayList<>();
+        Integer messageBit;
+
+        System.out.println("Decrypt message binary");
+        for (Integer cipherBit: encryptedMessageBinary) {
+            messageBit = (cipherBit % privateKey) % 2;
+            System.out.print(messageBit);
+            messageBinaryBuilder.add(messageBit);
+        }
+        this.message = (cipher%privateKey) % 2;
+        System.out.println(message);
     }
 
-    public Integer getPlain() {
-        return plain;
+    public Integer getMessage() {
+        return message;
     }
 
 }
