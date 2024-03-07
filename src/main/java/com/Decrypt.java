@@ -4,26 +4,41 @@ import java.util.ArrayList;
 
 public class Decrypt {
 
-    private Integer message;
-    private Integer privateKey;
-    private Integer cipher;
+    private ArrayList<Long> valueBinaryArray;
+    private String valueBinary;
+    private Long value;
     
-    public Decrypt(Integer privateKey, ArrayList<Integer> encryptedMessageBinary) {
-        ArrayList<Integer> messageBinaryBuilder = new ArrayList<>();
-        Integer messageBit;
+    public Decrypt(Integer privateKey, ArrayList<Long> encryptedMessageBinary) {
+        ArrayList<Long> messageBinaryBuilder = new ArrayList<>();
+        Long messageBit;
 
-        System.out.println("Decrypt message binary");
-        for (Integer cipherBit: encryptedMessageBinary) {
+        for (Long cipherBit: encryptedMessageBinary) {
             messageBit = (cipherBit % privateKey) % 2;
-            System.out.print(messageBit);
             messageBinaryBuilder.add(messageBit);
         }
-        //this.message = (cipher%privateKey) % 2;
-        //System.out.println(message);
+        valueBinaryArray = messageBinaryBuilder;
+        valueBinary = Utils.binaryArrayToString(messageBinaryBuilder);
+        value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
     }
 
-    public Integer getMessage() {
-        return message;
+    public Long getValue() {
+        return value;
+    }
+
+    public String getValueBinary() {
+        return valueBinary;
+    }
+
+    public ArrayList<Long> getValueBinaryArray() {
+        return valueBinaryArray;
+    }
+
+    public void display(String name) {
+        System.out.println("====== "+ name +" DECRYPTION ======");
+        System.out.print("> BINARY ARRAY : ");
+        System.out.println(valueBinary);
+        System.out.println("> DECIMAL : " + value);
+        System.out.println("========================");
     }
 
 }

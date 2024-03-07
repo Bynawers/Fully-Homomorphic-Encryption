@@ -33,7 +33,6 @@ public class Keygen {
             randomNumber = random.nextInt(upperBound - lowerBound) + lowerBound;
         }
 
-        System.out.println("private key : " + randomNumber);
         return randomNumber;
     }
 
@@ -52,14 +51,12 @@ public class Keygen {
         x[indexX0] = x[0];
         x[0] = tmp;
 
-        if (x[indexX0] % 2 == 0) {
+        if (((x[0] % privateKey) % 2) == 1) {
             return publicKeyGen();
         }
-
-        displayPublicKey(x);
-
-        System.out.print("public key : ");
-        System.out.println(publicKeyToInt(x));
+        if ((x[0] % 2 == 0)) {
+            //return publicKeyGen();
+        }
 
         return x;
     }
@@ -80,25 +77,14 @@ public class Keygen {
         return  Math.abs(privateKey * q + r);
     }
 
-    private void displayPublicKey(Integer[] x) {
-        System.out.print("Integer Public key : ");
-        for (int i = 0; i < x.length; i++) {
-            System.out.print(x[i] + " | ");
-        }
-        System.out.println();
-    }
 
-    private Long publicKeyToInt(Integer[] publicKey) {
-        StringBuilder publicKeyBuilder = new StringBuilder();
-
-        for (int i = 0; i < publicKey.length; i++) {
-            publicKeyBuilder.append(publicKey[i]);
-        }
-
-        String publicKeyStr = publicKeyBuilder.toString();
-
-        long publicKeyInteger = Long.parseLong(publicKeyStr);
-
-        return publicKeyInteger;
+    public void display() {
+        System.out.println("====== KEYGEN ======");
+        System.out.println("> PUBLIC KEY : ");
+        System.out.println("> rp(x0) = "+ publicKey[0] % privateKey );
+        Utils.displayPublicKey(publicKey);
+        System.out.print("> PRIVATE KEY : ");
+        System.out.print(privateKey + "\n");
+        System.out.println("====================");
     }
 }
