@@ -10,15 +10,24 @@ import junit.framework.TestSuite;
 public class EncryptTest 
 {
 
-    public void testEncrypt()
+    public void testEncryption()
     {
         Keygen keys = new Keygen();
-        Integer sum = 0;
-        for (int i = 0; i < keys.getPublicKey().length; i++) {
-            sum = sum + keys.getPublicKey()[i];
-        }
-        int c = ((1 + 0 + 2*sum) % keys.getPublicKey()[0]);
-        int m = (c % keys.getPrivateKey()) % 2;
-        assert( m == 1 );
+
+        Encrypt encrypt = new Encrypt(keys.getPublicKey(), 15, keys.getPrivateKey());
+        Encrypt encrypt2 = new Encrypt(keys.getPublicKey(), 1, keys.getPrivateKey());
+        Encrypt encrypt3 = new Encrypt(keys.getPublicKey(), 0, keys.getPrivateKey());
+        Encrypt encrypt4 = new Encrypt(keys.getPublicKey(), 100000, keys.getPrivateKey());
+
+        Decrypt decrypt = new Decrypt(keys.getPrivateKey(), encrypt.getValueBinaryArray());
+        Decrypt decrypt2 = new Decrypt(keys.getPrivateKey(), encrypt2.getValueBinaryArray());
+        Decrypt decrypt3 = new Decrypt(keys.getPrivateKey(), encrypt3.getValueBinaryArray());
+        Decrypt decrypt4 = new Decrypt(keys.getPrivateKey(), encrypt4.getValueBinaryArray());
+
+        assert( decrypt.getValue() == 15 );
+        assert( decrypt2.getValue() == 1 );
+        assert( decrypt3.getValue() == 0 );
+        assert( decrypt4.getValue() == 100000 );
     }
+    
 }

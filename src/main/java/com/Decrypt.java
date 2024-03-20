@@ -1,27 +1,27 @@
 package com;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class Decrypt {
 
-    private ArrayList<Long> valueBinaryArray;
+    private ArrayList<BigInteger> valueBinaryArray;
     private String valueBinary;
-    private Long value;
-    
-    public Decrypt(Integer privateKey, ArrayList<Long> encryptedMessageBinary) {
-        ArrayList<Long> messageBinaryBuilder = new ArrayList<>();
-        Long messageBit;
+    private BigInteger value;
 
-        for (Long cipherBit: encryptedMessageBinary) {
-            messageBit = (cipherBit % privateKey) % 2;
+    public Decrypt(BigInteger privateKey, ArrayList<BigInteger> encryptedMessageBinary) {
+        ArrayList<BigInteger> messageBinaryBuilder = new ArrayList<>();
+        BigInteger messageBit;
+
+        for (BigInteger cipherBit : encryptedMessageBinary) {
+            messageBit = cipherBit.mod(privateKey).mod(BigInteger.valueOf(2));
             messageBinaryBuilder.add(messageBit);
         }
         valueBinaryArray = messageBinaryBuilder;
-        valueBinary = Utils.binaryArrayToString(messageBinaryBuilder);
         value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
     }
 
-    public Long getValue() {
+    public BigInteger getValue() {
         return value;
     }
 
@@ -29,14 +29,17 @@ public class Decrypt {
         return valueBinary;
     }
 
-    public ArrayList<Long> getValueBinaryArray() {
+    public ArrayList<BigInteger> getValueBinaryArray() {
         return valueBinaryArray;
     }
 
     public void display(String name) {
         System.out.println("====== "+ name +" DECRYPTION ======");
         System.out.print("> BINARY ARRAY : ");
-        System.out.println(valueBinary);
+        for(BigInteger element : valueBinaryArray) {
+            System.out.print(element);
+        }
+        System.out.println();
         System.out.println("> DECIMAL : " + value);
         System.out.println("========================");
     }

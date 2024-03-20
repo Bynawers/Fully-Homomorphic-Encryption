@@ -6,6 +6,7 @@ public class Evaluate {
 
     private ArrayList<Long> valueBinaryArray;
     
+    // dont use
     public Evaluate(Integer[] publicKey, ArrayList<Instruction> circuit, ArrayList<Integer> cipherBinary) {
 
         for (Integer component: cipherBinary) {
@@ -27,8 +28,6 @@ public class Evaluate {
         ArrayList<Long> ValueBinaryArrayBuilder = new ArrayList<>();
         long bitTmp = 0;
 
-        System.out.println(c1.size());
-        System.out.println(c2.size());
         for (int i = 0; i < c2.size(); i++) {
             if (i != c2.size() - 1) {
                 bitTmp = c1.get(i) + c2.get(i) + deductionValue(i, c1, c2);

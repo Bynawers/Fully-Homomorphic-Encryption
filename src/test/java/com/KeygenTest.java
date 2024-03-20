@@ -25,4 +25,5 @@ public class KeygenTest
         assert( (keys.getPrivateKey() % 2) == 1 );
         assert( ((keys.getPublicKey()[0] % keys.getPrivateKey()) % 2) == 0 );
     }
+
 }
