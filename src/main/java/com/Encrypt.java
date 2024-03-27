@@ -1,17 +1,26 @@
 package com;
 
 import java.math.BigInteger;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class Encrypt {
 
-    private Integer[] publicKey;
-    private Integer privateKey; 
+    private ArrayList<BigInteger> valueBinaryArray = new ArrayList<>();
 
+<<<<<<< HEAD
+    public Encrypt(BigInteger[] publicKey, BigInteger message, BigInteger privateKey) {
+        ArrayList<BigInteger> encryptedMessageBuilder = new ArrayList<>();
+
+        for (int i = Integer.SIZE - 1; i >= 0; i--) {
+            int bit = message.testBit(i) ? 1 : 0;
+            System.out.println(bit);
+            BigInteger encryptedBit = encryptBit(bit, privateKey, publicKey);
+            encryptedMessageBuilder.add(encryptedBit);
+        }
+
+        this.valueBinaryArray = encryptedMessageBuilder;
+=======
     private BigInteger c;
 
     private List<Integer> encryptedMessage;
@@ -39,32 +48,58 @@ public class Encrypt {
         c = listToInteger(encryptedMessage);
         
         System.out.println("Le chiffré est : " + getC());
+>>>>>>> fa7760b89cc833bef5fdb83e9e29dce5128e1db1
     }
 
-    public Integer EncryptBit(Integer bit) {
-
+    public BigInteger encryptBit(int bit, BigInteger privateKey, BigInteger[] publicKey) {
         Random random = new Random();
-            
-        List<Integer> randomSubstet = randomSubset();
+        BigInteger lowerBound = BigInteger.valueOf(-1).multiply(BigInteger.valueOf(2).pow(Parameters.NOISE_LENGTH_PRIME));
+        BigInteger upperBound = BigInteger.valueOf(2).pow(Parameters.NOISE_LENGTH_PRIME);
 
-        Integer lowerBound = -(int) Math.pow(2, Parameters.NOISE_LENGTH);
-        Integer upperBound = (int) Math.pow(2, Parameters.NOISE_LENGTH);
+        BigInteger r;
+        do {
+            r = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
+        } while (r.compareTo(lowerBound) < 0 || r.compareTo(upperBound) >= 0);
 
-        Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
+        BigInteger sumRandomX = sumRandomSubset(publicKey);
 
+<<<<<<< HEAD
+        if (r.compareTo(privateKey) > 0) {
+            Utils.warning("Random bigger than private key (Encryption)");
+=======
         this.nbrFirstmod = 2*sumRandomSubsetPublicKey(randomSubstet);     //  Attention il y a un problème ici
         System.out.println("Nbrfirstmod = " + this.nbrFirstmod);
         Integer tmp = bit + 2*r + this.nbrFirstmod;
         if (tmp < 0) {
             tmp += publicKey[0];
+>>>>>>> fa7760b89cc833bef5fdb83e9e29dce5128e1db1
         }
-        return tmp;
+
+        BigInteger encryptedBit = BigInteger.valueOf(bit)
+                .add(r.multiply(BigInteger.TWO))
+                .add(sumRandomX.multiply(BigInteger.TWO))
+                .mod(publicKey[0]);
+
+        System.out.println("( " + bit + " + " + r.multiply(BigInteger.TWO) + " + " + sumRandomX.multiply(BigInteger.TWO) + " ) mod " + publicKey[0]);
+
+        if (encryptedBit.compareTo(BigInteger.ZERO) < 0) {
+            encryptedBit = encryptedBit.add(publicKey[0]);
+        }
+
+        //valueBinaryArray.add(encryptedBit);
+
+        return encryptedBit;
     }
 
-    public BigInteger getC() {
-        return c;
+    public ArrayList<BigInteger> getValueBinaryArray() {
+        return valueBinaryArray;
     }
 
+<<<<<<< HEAD
+    private BigInteger sumRandomSubset(BigInteger[] publicKey) {
+        Random random = new Random();
+        BigInteger sum = BigInteger.ZERO;
+=======
     public List<Integer> getencryptedMessage(){
         return this.encryptedMessage;
     }
@@ -74,12 +109,30 @@ public class Encrypt {
         for (Integer index: randomSubset) {
             sum += publicKey[index];
             //System.out.println("publicKey["+index+"] = " + publicKey[index]);
+>>>>>>> fa7760b89cc833bef5fdb83e9e29dce5128e1db1
 
+        for (BigInteger value : publicKey) {
+            int r = random.nextInt(2);
+            if (r == 1) {
+                sum = sum.add(value);
+                if (sum.compareTo(BigInteger.ZERO) < 0) {
+                    Utils.warning("Dépassement de variable (Sum x[i])");
+                }
+            }
         }
-        //System.out.println("SUM = "+sum);
         return sum;
     }
 
+<<<<<<< HEAD
+    public void display(String name) {
+        System.out.println("====== " + name + " ENCRYPTION ======");
+        System.out.print("> BINARY ARRAY : ");
+        Utils.displayArray(valueBinaryArray);
+        System.out.println("========================");
+    }
+
+}
+=======
     private List<Integer> randomSubset() {
 
         List<Integer> numbers = new ArrayList<>();
@@ -128,3 +181,4 @@ public class Encrypt {
         return this.nbrFirstmod;
     }
 }
+>>>>>>> fa7760b89cc833bef5fdb83e9e29dce5128e1db1

@@ -1,63 +1,49 @@
 package com;
 
 import java.util.Random;
-import java.security.SecureRandom;
+import java.math.BigInteger;
 
 public class Keygen {
 
-    private Integer[] publicKey;
-    private Integer privateKey;
+    private BigInteger[] publicKey;
+    private BigInteger privateKey;
+
+    private BigInteger maxRandomNoise = BigInteger.ZERO;
 
     public Keygen() {
         privateKey = privateKeyGen();
-        publicKey = publicKeyGen();
+        publicKey = publicKeyGen(0);
     }
 
-    public Integer[] getPublicKey() {
+    public BigInteger[] getPublicKey() {
         return publicKey;
     }
     
-    public Integer getPrivateKey() {
+    public BigInteger getPrivateKey() {
         return privateKey;
     }
 
-    private Integer privateKeyGen() {
-
+    private BigInteger privateKeyGen() {
         Random random = new Random();
-        
-        int lowerBound = (int) Math.pow(2, Parameters.PRIVATE_KEY_LENGTH - 1);
-        int upperBound = (int) Math.pow(2, Parameters.PRIVATE_KEY_LENGTH);
+        BigInteger lowerBound = BigInteger.valueOf(2).pow(Parameters.PRIVATE_KEY_LENGTH - 1);
+        BigInteger upperBound = BigInteger.valueOf(2).pow(Parameters.PRIVATE_KEY_LENGTH);
 
-        int randomNumber = 0;
+        BigInteger randomNumber;
+        do {
+            randomNumber = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
+        } while (randomNumber.compareTo(lowerBound) < 0 || randomNumber.compareTo(upperBound) >= 0 || randomNumber.mod(BigInteger.TWO).equals(BigInteger.ZERO));
 
-        while(randomNumber % 2 == 0 || randomNumber < lowerBound || randomNumber >= upperBound ) {
-
-            StringBuilder privateKeyBinary = new StringBuilder();
-            
-            //pour vérifier la taille de la clé privé
-            for(int i = 0; i < Parameters.PRIVATE_KEY_LENGTH; i++) {
-                int bit = random.nextInt(2);
-                privateKeyBinary.append(bit);
-            }
-
-            String privateKeyBinaryString = privateKeyBinary.toString ();
-            //System.out.println("private key string = " + privateKeyBinaryString);
-            randomNumber = Integer.parseInt(privateKeyBinaryString, 2 );
-            
-        }
-
-        System.out.println("private key = " + randomNumber +"\n");
         return randomNumber;
     }
 
-    private Integer[] publicKeyGen() {
-        Integer[] x = new Integer[Parameters.PUBLIC_KEY_INTEGER_NUMBER+1];
+    private BigInteger[] publicKeyGen(Integer loop) {
+        BigInteger[] x = new BigInteger[Parameters.PUBLIC_KEY_INTEGER_NUMBER];
         int indexX0 = 0;
-        int tmp = 0;
+        BigInteger tmp = BigInteger.ZERO;
 
-        for(int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER + 1; i++) {
-            x[i] = distribution(this.privateKey);
-            if (x[indexX0] < x[i]) {
+        for (int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
+            x[i] = distribution(privateKey);
+            if (x[indexX0].compareTo(x[i]) < 0) {
                 indexX0 = i;
             }
         }
@@ -65,69 +51,57 @@ public class Keygen {
         x[indexX0] = x[0];
         x[0] = tmp;
 
-        
-        if (x[indexX0] % 2 == 0) {
-            System.out.println("x0 paire");
-            return publicKeyGen();
-        }
+        BigInteger rpx = x[0].mod(privateKey);
 
+        if (rpx.mod(BigInteger.TWO).equals(BigInteger.ONE)) {
+            return publicKeyGen(loop + 1);
+        }
+        if (x[0].mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+            return publicKeyGen(loop + 1);
+        }
+        //System.out.println("----> " + (rpx.compareTo(BigInteger.valueOf(10)) < 0));
         /*
-            le cas ou rp(x0) est impaire
-        */
+        if ((rpx.compareTo(BigInteger.valueOf(1000)) < 0)) {
+            return publicKeyGen(loop + 1);
+        }*/
 
-        displayPublicKey(x);
-
-        System.out.print("public key = ");
-        System.out.println(publicKeyToInt(x));
-
-        return x;     
+        return x;
     }
 
-    public Integer distribution(Integer privateKey) {
-      
-      while(true) { 
+    public BigInteger distribution(BigInteger privateKey) {
         Random random = new Random();
-      
-        int lowerBound = 0;
-        int upperBound = (int) Math.floor((Math.pow(2, Parameters.PUBLIC_KEY_INTEGER_LENGTH)) / privateKey);
 
-     
-        Integer q = random.nextInt(upperBound - lowerBound) + lowerBound;
+        BigInteger lowerBound = BigInteger.ZERO;
+        BigInteger upperBound = BigInteger.valueOf(2).pow(Parameters.PUBLIC_KEY_INTEGER_LENGTH).divide(privateKey);
 
-        lowerBound = -(int) Math.pow(2, Parameters.NOISE_LENGTH);
-        upperBound = (int) Math.pow(2, Parameters.NOISE_LENGTH);
+        BigInteger q;
+        do {
+            q = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
+        } while (q.compareTo(lowerBound) < 0 || q.compareTo(upperBound) >= 0);
 
-        Integer r = random.nextInt(upperBound - lowerBound) + lowerBound;
-        
-        int nb = privateKey*q+r;
+        lowerBound = BigInteger.valueOf(-1).multiply(BigInteger.valueOf(2).pow(Parameters.NOISE_LENGTH));
+        upperBound = BigInteger.valueOf(2).pow(Parameters.NOISE_LENGTH);
 
-        String binaryDistribution = Integer.toBinaryString(nb);
+        BigInteger r;
+        do {
+            r = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
+        } while (r.compareTo(lowerBound) < 0 || r.compareTo(upperBound) >= 0);
 
-        if (binaryDistribution.length() == Parameters.PUBLIC_KEY_INTEGER_LENGTH) {
-            return privateKey * q + r;
-        }    
-      } 
+        maxRandomNoise = maxRandomNoise.add(r);
+
+        return privateKey.multiply(q).add(r);
     }
 
-    private void displayPublicKey(Integer[] x) {
-        System.out.print("Integer Public key = ");
-        for (int i = 0; i < x.length; i++) {
-            System.out.print(x[i] + " | ");
-        }
-        System.out.println();
-    }
 
-    private Long publicKeyToInt(Integer[] publicKey) {
-        StringBuilder publicKeyBuilder = new StringBuilder();
-
-        for (int i = 0; i < publicKey.length; i++) {
-            publicKeyBuilder.append(publicKey[i]);
-        }
-
-        String publicKeyStr = publicKeyBuilder.toString();
-
-        long publicKeyInteger = Long.parseLong(publicKeyStr);
-
-        return publicKeyInteger;
+    public void display() {
+        System.out.println("====== KEYGEN ======");
+        System.out.println("> PUBLIC KEY : ");
+        System.out.println("> rp(x0) = "+ publicKey[0].mod(privateKey));
+        System.out.println("> x0 = "+ publicKey[0] );
+        //Utils.displayPublicKey(publicKey);
+        System.out.print("> PRIVATE KEY : ");
+        System.out.print(privateKey + "\n");
+        System.out.println("> SUM Random (Noise) : " + maxRandomNoise);
+        System.out.println("====================");
     }
 }
