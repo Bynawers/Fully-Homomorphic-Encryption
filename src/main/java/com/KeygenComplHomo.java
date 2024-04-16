@@ -1,16 +1,37 @@
 package com;
 
 import java.util.Random;
-
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
 public class KeygenComplHomo {
 
-    Keygen keys = new Keygen();
-    private BigInteger Xp = (BigInteger.valueOf(2).pow(Parameters.KEPPA)).divide(keys.getPrivateKey());
-    private int[] setS = new int[Parameters.theta];
+    private BigInteger Xp;
+    private int[] setS;
+
+    private BigDecimal[] publicKey;
+    private int[] privateKey;
+
+    public KeygenComplHomo(BigInteger privateKey) {
+        this.Xp = (BigInteger.valueOf(2).pow(Parameters.KEPPA)).divide(privateKey);
+        this.setS = new int[Parameters.theta];
+
+        this.privateKey = privateKeyGen();
+        this.publicKey = publicKeyGen();
+    }
+
+    public int[] getPrivateKey() {
+        return this.privateKey;
+    }
+
+    public BigDecimal[] getPublickey() {
+        return this.publicKey;
+    }
+    
 
     public int[] privateKeyGen() {   
         // Initialisation du vecteur avec tous les bits à 0
@@ -48,7 +69,7 @@ public class KeygenComplHomo {
         return this.setS;
     }
 
-    public BigInteger[] publicKeyGen() {
+    public BigDecimal[] publicKeyGen() {
         BigInteger[] u = new BigInteger[Parameters.Theta];
         Random random = new Random();
 
@@ -57,27 +78,41 @@ public class KeygenComplHomo {
      
         BigInteger sumUi;
 
-        do {
-            sumUi = BigInteger.ZERO;
-            for(int i = 0; i < Parameters.Theta; i++ ) {
-                do {
-                    u[i] = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
-                } while (u[i].compareTo(lowerBound) < 0 || u[i].compareTo(upperBound) >= 0);
-            }
-    
-            for (int j : this.setS) {
-                sumUi = sumUi.add(u[j]);
-            }
-            System.out.println("pas encore");
-        } while (!sumUi.equals((this.Xp).mod(upperBound)));
-
-        BigInteger[] vectY = new BigInteger[Parameters.Theta];
-
+        sumUi = BigInteger.ZERO;
         for(int i = 0; i < Parameters.Theta; i++ ) {
-            vectY[i] = u[i].divide(BigInteger.valueOf(2).pow(Parameters.KEPPA));  
+            do {
+                u[i] = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
+            } while (u[i].compareTo(lowerBound) < 0 || u[i].compareTo(upperBound) >= 0);
+        } 
+    
+        BigInteger z = BigInteger.ZERO;
+        int k;
+        for (int j : this.setS) {
+            sumUi = sumUi.add(u[j]);
+            z = u[j];
+            k = j;
         }
 
-        return u;
+        while(!(this.Xp).equals(sumUi.mod(upperBound))) {
+            sumUi = sumUi.subtract(z); 
+            BigInteger l = (sumUi.divide(upperBound)).add(BigInteger.ONE);
+            z = (l.multiply(upperBound)).subtract(sumUi);
+            z = z.add(this.Xp);
+            //System.out.println("z = "+z);
+            sumUi = sumUi.add(z);
+            //System.out.println((this.Xp).equals(sumUi.mod(upperBound)));
+        }
+
+        Integer precision = Parameters.KEPPA;
+            
+        BigDecimal[] vectY = new BigDecimal[Parameters.Theta];
+
+        for(int i = 0; i < Parameters.Theta; i++ ) {
+            vectY[i] = new BigDecimal(u[i]).divide(new BigDecimal(2).pow(Parameters.KEPPA), new MathContext(precision - 1));
+            //System.out.println(vectY[i]);
+        }
+
+        return vectY;
     }
 
     
