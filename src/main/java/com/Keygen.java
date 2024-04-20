@@ -5,22 +5,14 @@ import java.math.BigInteger;
 
 public class Keygen {
 
-    private BigInteger[] publicKey;
-    private BigInteger privateKey;
+    public BigInteger[] publicKey;
+    public BigInteger privateKey;
 
-    private BigInteger maxRandomNoise = BigInteger.ZERO;
+    public BigInteger[] noise = new BigInteger[Parameters.PUBLIC_KEY_INTEGER_NUMBER];
 
     public Keygen() {
         privateKey = privateKeyGen();
         publicKey = publicKeyGen(0);
-    }
-
-    public BigInteger[] getPublicKey() {
-        return publicKey;
-    }
-    
-    public BigInteger getPrivateKey() {
-        return privateKey;
     }
 
     private BigInteger privateKeyGen() {
@@ -38,11 +30,14 @@ public class Keygen {
 
     private BigInteger[] publicKeyGen(Integer loop) {
         BigInteger[] x = new BigInteger[Parameters.PUBLIC_KEY_INTEGER_NUMBER];
-        int indexX0 = 0;
         BigInteger tmp = BigInteger.ZERO;
+        BigInteger[] result = new BigInteger[2];
+        int indexX0 = 0;
 
         for (int i = 0; i < Parameters.PUBLIC_KEY_INTEGER_NUMBER; i++) {
-            x[i] = distribution(privateKey);
+            result = distribution();
+            x[i] = result[0];
+            noise[i] = result[1];
             if (x[indexX0].compareTo(x[i]) < 0) {
                 indexX0 = i;
             }
@@ -50,6 +45,10 @@ public class Keygen {
         tmp = x[indexX0];
         x[indexX0] = x[0];
         x[0] = tmp;
+
+        tmp = noise[indexX0];
+        noise[indexX0] = noise[0];
+        noise[0] = tmp;
 
         BigInteger rpx = x[0].mod(privateKey);
 
@@ -59,16 +58,11 @@ public class Keygen {
         if (x[0].mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
             return publicKeyGen(loop + 1);
         }
-        //System.out.println("----> " + (rpx.compareTo(BigInteger.valueOf(10)) < 0));
-        /*
-        if ((rpx.compareTo(BigInteger.valueOf(1000)) < 0)) {
-            return publicKeyGen(loop + 1);
-        }*/
 
         return x;
     }
 
-    public BigInteger distribution(BigInteger privateKey) {
+    public BigInteger[] distribution() {
         Random random = new Random();
 
         BigInteger lowerBound = BigInteger.ZERO;
@@ -87,21 +81,26 @@ public class Keygen {
             r = new BigInteger(upperBound.subtract(lowerBound).bitLength(), random);
         } while (r.compareTo(lowerBound) < 0 || r.compareTo(upperBound) >= 0);
 
-        maxRandomNoise = maxRandomNoise.add(r);
-
-        return privateKey.multiply(q).add(r);
+        if (Parameters.RANDOM) {
+            BigInteger[] result = new BigInteger[2];
+            result[0] = privateKey.multiply(q).add(r);
+            result[1] = r;
+            return result;
+        } else {
+            BigInteger[] result = new BigInteger[2];
+            result[0] = privateKey.multiply(q);
+            result[1] = BigInteger.valueOf(0);
+            return result;
+        }
     }
 
 
     public void display() {
-        System.out.println("====== KEYGEN ======");
-        System.out.println("> PUBLIC KEY : ");
+        System.out.println("================== KEYGEN ==================");
+        System.out.println("PUBLIC KEY : ");
         System.out.println("> rp(x0) = "+ publicKey[0].mod(privateKey));
         System.out.println("> x0 = "+ publicKey[0] );
-        //Utils.displayPublicKey(publicKey);
-        System.out.print("> PRIVATE KEY : ");
-        System.out.print(privateKey + "\n");
-        System.out.println("> SUM Random (Noise) : " + maxRandomNoise);
-        System.out.println("====================");
+        System.out.println("PRIVATE KEY : ");
+        System.out.println("> " + privateKey);
     }
 }

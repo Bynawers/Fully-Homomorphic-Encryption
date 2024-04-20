@@ -5,43 +5,30 @@ import java.util.ArrayList;
 
 public class Decrypt {
 
-    private ArrayList<BigInteger> valueBinaryArray;
-    private String valueBinary;
-    private BigInteger value;
+    public BigInteger[] binaryValue;
+    public BigInteger value;
+    public String valueBinary;
 
-    public Decrypt(BigInteger privateKey, ArrayList<BigInteger> encryptedMessageBinary) {
+    public Decrypt(BigInteger privateKey, BigInteger[] encrypted) {
         ArrayList<BigInteger> messageBinaryBuilder = new ArrayList<>();
         BigInteger messageBit;
 
-        for (BigInteger cipherBit : encryptedMessageBinary) {
+        for (BigInteger cipherBit : encrypted) {
             messageBit = cipherBit.mod(privateKey).mod(BigInteger.valueOf(2));
             messageBinaryBuilder.add(messageBit);
         }
-        valueBinaryArray = messageBinaryBuilder;
-        value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
-    }
-
-    public BigInteger getValue() {
-        return value;
-    }
-
-    public String getValueBinary() {
-        return valueBinary;
-    }
-
-    public ArrayList<BigInteger> getValueBinaryArray() {
-        return valueBinaryArray;
+        this.binaryValue = messageBinaryBuilder.toArray(new BigInteger[0]);;
+        this.value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
     }
 
     public void display(String name) {
-        System.out.println("====== "+ name +" DECRYPTION ======");
+        System.out.println("================== "+ name +" DECRYPTION ==================");
         System.out.print("> BINARY ARRAY : ");
-        for(BigInteger element : valueBinaryArray) {
+        for(BigInteger element : binaryValue) {
             System.out.print(element);
         }
         System.out.println();
         System.out.println("> DECIMAL : " + value);
-        System.out.println("========================");
     }
 
 }

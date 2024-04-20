@@ -1,6 +1,8 @@
 package com;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 // mvn exec:java
@@ -11,30 +13,69 @@ public final class App {
         Utils.displayParameters();
         
         Keygen keys = new Keygen();
+
         keys.display();
-        Utils.saveFileTab(keys.getPublicKey(), "./save/pk.txt");
-
-        Encrypt encrypt = new Encrypt(keys.getPublicKey(), BigInteger.valueOf(1), keys.getPrivateKey());
-        Encrypt encrypt2 = new Encrypt(keys.getPublicKey(), BigInteger.valueOf(0), keys.getPrivateKey());
-
-        encrypt.display("c1");
-        encrypt2.display("c2");
-
-        Utils.saveFileArray(encrypt.getValueBinaryArray(), "./save/c1.txt");
-        Utils.saveFileArray(encrypt2.getValueBinaryArray(), "./save/c2.txt");
-
-        Decrypt decrypt = new Decrypt(keys.getPrivateKey(), encrypt.getValueBinaryArray());
-        Decrypt decrypt2 = new Decrypt(keys.getPrivateKey(), encrypt2.getValueBinaryArray());
-
-        decrypt.display("m1");
-        decrypt2.display("m2");
-
+        Utils.saveFileTab(keys.publicKey, "./save/pk.txt");
         
-        //Evaluate eval = new Evaluate(encrypt.getValueBinaryArray(), encrypt2.getValueBinaryArray());
-        //eval.display();
+        if (Parameters.MULTIPLE == false) {
+            Encrypt encrypt = new Encrypt(keys.publicKey, BigInteger.valueOf(Parameters.m1), keys.privateKey, keys.noise);
+            Encrypt encrypt2 = new Encrypt(keys.publicKey, BigInteger.valueOf(Parameters.m2), keys.privateKey, keys.noise);
 
-        //Decrypt decrypt3 = new Decrypt(keys.getPrivateKey(), eval.getValueBinaryArray());
-        //decrypt3.display("m3");
-        //System.out.println("Decrypted BinaryArrayOperation:\n" + decrypt3.getValue() + "\n");
+            Utils.saveFileArray(encrypt.value, "./save/c1.txt");
+            Utils.saveFileArray(encrypt2.value, "./save/c2.txt");
+
+            BigInteger[][] noise = new BigInteger[2][];
+            noise[0] = encrypt.noise;
+            noise[1] = encrypt2.noise;
+        
+            Evaluate eval = new Evaluate(encrypt.value, encrypt2.value, keys.privateKey, noise);
+            Utils.displayNoise(eval.noise);
+
+            Decrypt decryptOperation = new Decrypt(keys.privateKey, eval.value);
+            decryptOperation.display("m3");
+            return;
+        }
+
+        int success = 0;
+        int fail = 0;
+
+        long m1 = 2;
+        long m2 = 16;
+
+        List<BigInteger> allValues = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            Encrypt encrypt = new Encrypt(keys.publicKey, BigInteger.valueOf(m1), keys.privateKey, keys.noise);
+            Encrypt encrypt2 = new Encrypt(keys.publicKey, BigInteger.valueOf(m2), keys.privateKey, keys.noise);
+       
+            BigInteger[][] noise = new BigInteger[2][];
+            noise[0] = encrypt.noise;
+            noise[1] = encrypt2.noise;
+
+            Evaluate eval = new Evaluate(encrypt.value, encrypt2.value, keys.privateKey, noise);
+            Decrypt decrypt = new Decrypt(keys.privateKey, eval.value);
+            BigInteger decryptedValue = decrypt.value;
+            
+            if (!allValues.contains(decryptedValue)) {
+                allValues.add(decryptedValue);
+            }
+            if (decrypt.value.compareTo(BigInteger.valueOf(m1 + m2)) == 0) {
+                success++;
+            } else {
+                fail++;
+            }
+        }
+
+        if (Parameters.DEBUG) {
+            System.out.println("========== All Values (seulement une valeur sinon problème) ============");
+            for (BigInteger value : allValues) {
+                System.out.println(value + " : ");
+                System.out.println(Utils.decimalToBinary(value.intValue()));
+            }
+        }
+ 
+        System.out.println("================ RESULT MULTIPLE ================");
+        System.out.println("> success : " + success);
+        System.out.println("> fail : " + fail);
     }
 }

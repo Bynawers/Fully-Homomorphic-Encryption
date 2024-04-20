@@ -22,6 +22,20 @@ public final class Utils {
         System.out.println(ANSI_YELLOW + "[WARNING] : " + ANSI_RESET + message);
     }
 
+    public static String decimalToBinary(int decimal) {
+        if (decimal == 0) {
+            return "0";
+        }
+        
+        StringBuilder binary = new StringBuilder();
+        while (decimal > 0) {
+            int remainder = decimal % 2;
+            binary.insert(0, remainder);
+            decimal /= 2;
+        }
+        return binary.toString();
+    }
+
     public static BigInteger binaryArrayToDecimal(ArrayList<BigInteger> binaryArray) {
         try {
             StringBuilder builder = new StringBuilder();
@@ -95,7 +109,7 @@ public final class Utils {
         }
     }
 
-    public static void saveFileArray(ArrayList<BigInteger> array, String filename) {
+    public static void saveFileArray(BigInteger[] array, String filename) {
         int NEW_LINE = 5; 
         int i = 0;
         try {
@@ -118,13 +132,20 @@ public final class Utils {
     }
 
     public static void displayParameters() {
-        System.out.println("==== Parameters ====");
+        System.out.println("================ Parameters ================");
         System.out.println("λ (SECURITY_PARAMETERS) : " + Parameters.VA_SECURITY);
         System.out.println("γ (PUBLIC_KEY_INTEGER_LENGTH) : " + Parameters.PUBLIC_KEY_INTEGER_LENGTH);
         System.out.println("η (PRIVATE_KEY_LENGTH) : " + Parameters.PRIVATE_KEY_LENGTH);
         System.out.println("ρ (NOISE_LENGTH) : " + Parameters.NOISE_LENGTH);
         System.out.println("ρ' (NOISE_LENGTH_PRIME) : " + Parameters.NOISE_LENGTH_PRIME);
         System.out.println("τ' (PUBLIC_KEY_INTEGER_NUMBER) : " + Parameters.PUBLIC_KEY_INTEGER_NUMBER);
-        System.out.println("====================");
+    }
+
+    public static void displayNoise(BigInteger[] noise) {
+        System.out.println("==================== NOISE ====================");
+        for(BigInteger value: noise) {
+            System.out.print(value);
+            System.out.println();
+        }
     }
 }
