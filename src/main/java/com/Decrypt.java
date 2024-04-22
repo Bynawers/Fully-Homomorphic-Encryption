@@ -1,9 +1,6 @@
 package com;
 
-<<<<<<< HEAD
 import java.math.BigDecimal;
-=======
->>>>>>> 4abe35fa9c3ebfd12107cf380761a1050e76069a
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -24,7 +21,6 @@ public class Decrypt {
         }
         valueBinaryArray = messageBinaryBuilder;
         value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
-<<<<<<< HEAD
     }
 
     public Decrypt(int[] privateKey, ArrayList<BigDecimal> encryptedMessageBinaryComplHomo, ArrayList<BigDecimal[]> ciphertextZ) {
@@ -63,8 +59,6 @@ public class Decrypt {
         valueBinaryArrayComplHomo = messageBinaryBuilder;
         value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
 
-=======
->>>>>>> 4abe35fa9c3ebfd12107cf380761a1050e76069a
     }
 
 
