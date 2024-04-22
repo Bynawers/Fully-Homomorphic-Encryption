@@ -20,7 +20,6 @@ public class Encrypt {
         }
 
         this.valueBinaryArray = encryptedMessageBuilder;
-<<<<<<< HEAD
     }
 
     public Encrypt(BigInteger[] publicKey, BigInteger message, BigInteger privateKey,BigDecimal[] publickeyComplHomo) {
@@ -47,8 +46,6 @@ public class Encrypt {
         this.valueBinaryArray = encryptedMessageBuilder;
         this.valueBinaryArrayComplHomo = encryptedMessageBuilder1;
 
-=======
->>>>>>> 4abe35fa9c3ebfd12107cf380761a1050e76069a
     }
 
     public BigInteger encryptBit(int bit, BigInteger privateKey, BigInteger[] publicKey) {
@@ -87,13 +84,10 @@ public class Encrypt {
         return valueBinaryArray;
     }
 
-<<<<<<< HEAD
     public ArrayList<BigDecimal[]> getvalueBinaryArrayComplHomo() {
         return valueBinaryArrayComplHomo;
     }
 
-=======
->>>>>>> 4abe35fa9c3ebfd12107cf380761a1050e76069a
     private BigInteger sumRandomSubset(BigInteger[] publicKey) {
         Random random = new Random();
         BigInteger sum = BigInteger.ZERO;
@@ -118,8 +112,4 @@ public class Encrypt {
         System.out.println("========================");
     }
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 4abe35fa9c3ebfd12107cf380761a1050e76069a
