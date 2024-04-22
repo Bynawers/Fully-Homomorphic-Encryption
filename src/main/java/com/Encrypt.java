@@ -113,6 +113,3 @@ public class Encrypt {
     }
 
 }
-=======
-}
->>>>>>> 4abe35fa9c3ebfd12107cf380761a1050e76069a
