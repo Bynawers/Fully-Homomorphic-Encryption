@@ -3,6 +3,7 @@ package com;
 import java.util.ArrayList;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public final class Utils {
@@ -64,6 +65,16 @@ public final class Utils {
             System.out.print(elem + " ");
         }
         System.out.println("");
+    }
+
+    public static void displayArrayComplHomo(ArrayList<BigDecimal[]> array) {
+        for (BigDecimal[] elemArray : array) {
+            // Parcourir chaque élément du tableau BigDecimal[]
+            for (BigDecimal elem : elemArray) {
+                System.out.print(elem + " ");
+            }
+            System.out.println(" "); // Nouvelle ligne après chaque tableau de BigDecimal
+        }
     }
 
     public static void displayPublicKey(BigInteger[] x) {

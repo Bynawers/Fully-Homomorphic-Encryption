@@ -1,12 +1,13 @@
 package com;
 
-<<<<<<< HEAD
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class Decrypt {
 
     private ArrayList<BigInteger> valueBinaryArray;
+    private ArrayList<BigInteger> valueBinaryArrayComplHomo;
     private String valueBinary;
     private BigInteger value;
 
@@ -20,34 +21,46 @@ public class Decrypt {
         }
         valueBinaryArray = messageBinaryBuilder;
         value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
-=======
-import java.util.List;
+    }
 
-import java.math.BigInteger;
-public class Decrypt {
+    public Decrypt(int[] privateKey, ArrayList<BigDecimal> encryptedMessageBinaryComplHomo, ArrayList<BigDecimal[]> ciphertextZ) {
 
-    private Integer plain;
-    private Integer privateKey;
-    //private BigInteger cipher;
+        ArrayList<BigInteger> messageBinaryBuilder = new ArrayList<>();
+        BigDecimal messageBit;
+        BigDecimal sum = BigDecimal.ZERO;
 
-    //private List<Integer> encryptedMessage = Encrypt.getencryptedMessage();
+        int index = 0; // Indice pour suivre les éléments traités
+
+        while (index < ciphertextZ.size() && index <  encryptedMessageBinaryComplHomo.size()) {
+            BigDecimal[] vectz = ciphertextZ.get(index);
+            BigDecimal cipherBit = encryptedMessageBinaryComplHomo.get(index);
+            //System.out.println(cipherBit);
+
+            sum = BigDecimal.ZERO; // Réinitialiser la somme pour chaque itération de vectz
+
     
-    public Decrypt(Integer privateKey, List<Integer> encryptedMessage, Integer Nbrfirstmod) {
-        for(Integer cipher : encryptedMessage) {
-            System.out.println ("le cipher est: " + cipher);
-            this.plain = ((cipher % Nbrfirstmod ) % 2);
-            System.out.println("le message est :" + plain);
+            // Calculer la somme des produits de chaque élément de vectz par le correspondant de privateKey
+            for (int i = 0; i < vectz.length; i++) {
+                sum = sum.add(BigDecimal.valueOf(privateKey[i]).multiply(vectz[i]));
+            }
+
+            System.out.println(sum);
+
+            BigDecimal floorSum = sum.setScale(0, BigDecimal.ROUND_FLOOR);
+
+            // Soustraire floorSum à cipherBit et ajouter le résultat dans messageBinaryBuilder
+            messageBit = cipherBit.subtract(floorSum);
+            messageBit = messageBit.remainder(BigDecimal.valueOf(2));
+            messageBinaryBuilder.add(messageBit.toBigInteger());
+
+            index++; // Passer au prochain élément
         }
 
-        /*
-        for (Integer chiffre : encryptedMessage) {
-            System.out.println(chiffre);
-            builder.append(chiffre);
-        }*/
+        valueBinaryArrayComplHomo = messageBinaryBuilder;
+        value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
 
-        
->>>>>>> fa7760b89cc833bef5fdb83e9e29dce5128e1db1
     }
+
 
     public BigInteger getValue() {
         return value;
@@ -64,7 +77,10 @@ public class Decrypt {
     public void display(String name) {
         System.out.println("====== "+ name +" DECRYPTION ======");
         System.out.print("> BINARY ARRAY : ");
-        for(BigInteger element : valueBinaryArray) {
+        /*for(BigInteger element : valueBinaryArray) {
+            System.out.print(element);
+        }*/
+        for(BigInteger element : valueBinaryArrayComplHomo) {
             System.out.print(element);
         }
         System.out.println();
