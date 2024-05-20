@@ -2,6 +2,7 @@ package com;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class Decrypt {
@@ -23,7 +24,8 @@ public class Decrypt {
         value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
     }
 
-    public Decrypt(int[] privateKey, ArrayList<BigDecimal> encryptedMessageBinaryComplHomo, ArrayList<BigDecimal[]> ciphertextZ) {
+    public Decrypt(int[] privateKey, ArrayList<BigDecimal> encryptedMessageBinaryComplHomo, ArrayList<BigDecimal[]> ciphertextZ, BigInteger p) {
+
 
         ArrayList<BigInteger> messageBinaryBuilder = new ArrayList<>();
         BigDecimal messageBit;
@@ -34,7 +36,7 @@ public class Decrypt {
         while (index < ciphertextZ.size() && index <  encryptedMessageBinaryComplHomo.size()) {
             BigDecimal[] vectz = ciphertextZ.get(index);
             BigDecimal cipherBit = encryptedMessageBinaryComplHomo.get(index);
-            //System.out.println(cipherBit);
+            //System.out.println("cipherbit " + cipherBit);
 
             sum = BigDecimal.ZERO; // Réinitialiser la somme pour chaque itération de vectz
 
@@ -44,9 +46,9 @@ public class Decrypt {
                 sum = sum.add(BigDecimal.valueOf(privateKey[i]).multiply(vectz[i]));
             }
 
-            System.out.println(sum);
-
-            BigDecimal floorSum = sum.setScale(0, BigDecimal.ROUND_FLOOR);
+            sum = sum.add(new BigDecimal(1));
+    
+            BigDecimal floorSum = sum.setScale(0, RoundingMode.HALF_UP);
 
             // Soustraire floorSum à cipherBit et ajouter le résultat dans messageBinaryBuilder
             messageBit = cipherBit.subtract(floorSum);
@@ -60,7 +62,6 @@ public class Decrypt {
         value = Utils.binaryArrayToDecimal(messageBinaryBuilder);
 
     }
-
 
     public BigInteger getValue() {
         return value;
@@ -89,3 +90,4 @@ public class Decrypt {
     }
 
 }
+
