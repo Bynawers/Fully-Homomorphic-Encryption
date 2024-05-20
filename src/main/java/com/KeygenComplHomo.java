@@ -5,23 +5,30 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 public class KeygenComplHomo {
 
     private BigInteger Xp;
-    private int[] setS;
+    private List<Integer> setS;
 
     private BigDecimal[] publicKey;
     private int[] privateKey;
+    private BigInteger privateKey_p;
 
-    public KeygenComplHomo(BigInteger privateKey) {
-        this.Xp = (BigInteger.valueOf(2).pow(Parameters.KEPPA)).divide(privateKey);
-        this.setS = new int[Parameters.Theta];   
+    public KeygenComplHomo(BigInteger privatekey_p) {
+        this.privateKey_p = privatekey_p;
+        this.Xp = ((BigInteger.valueOf(2).pow(Parameters.KEPPA)).divide(privatekey_p)).add(BigInteger.ONE);
+        this.setS = new ArrayList();   
 
         this.privateKey = privateKeyGen();
         this.publicKey = publicKeyGen();
+    }
+
+    public BigInteger getPrivateKey_p() {
+        return this.privateKey_p;
     }
 
     public int[] getPrivateKey() {
@@ -46,8 +53,8 @@ public class KeygenComplHomo {
                 index = random.nextInt(Parameters.Theta);
             }
             vectS[index] = 1;
-            this.setS[i] = index;
-        }
+            this.setS.add(index);
+        }    
 
         return vectS;
     }
@@ -65,7 +72,7 @@ public class KeygenComplHomo {
         System.out.println("}");
     }
 
-    public int[] getSetS() {
+    public List<Integer> getSetS() {
         return this.setS;
     }
 
@@ -86,11 +93,9 @@ public class KeygenComplHomo {
         } 
     
         BigInteger z = BigInteger.ZERO;
-        int k;
         for (int j : this.setS) {
             sumUi = sumUi.add(u[j]);
             z = u[j];
-            k = j;
         }
 
         while(!(this.Xp).equals(sumUi.mod(upperBound))) {
@@ -98,17 +103,19 @@ public class KeygenComplHomo {
             BigInteger l = (sumUi.divide(upperBound)).add(BigInteger.ONE);
             z = (l.multiply(upperBound)).subtract(sumUi);
             z = z.add(this.Xp);
-            //System.out.println("z = "+z);
             sumUi = sumUi.add(z);
-            //System.out.println((this.Xp).equals(sumUi.mod(upperBound)));
         }
 
         Integer precision = Parameters.KEPPA;
             
         BigDecimal[] vectY = new BigDecimal[Parameters.Theta];
 
+        BigDecimal dum  = BigDecimal.ZERO;
+
         for(int i = 0; i < Parameters.Theta; i++ ) {
-            vectY[i] = new BigDecimal(u[i]).divide(new BigDecimal(2).pow(Parameters.KEPPA), new MathContext(precision));
+            
+            vectY[i] = new BigDecimal(u[i]).divide(new BigDecimal(2).pow(Parameters.KEPPA));    
+            vectY[i] = vectY[i].setScale(precision, BigDecimal.ROUND_DOWN);
             //System.out.println(vectY[i]);
         }
 
@@ -117,4 +124,4 @@ public class KeygenComplHomo {
 
     
     
-}    
+}     
