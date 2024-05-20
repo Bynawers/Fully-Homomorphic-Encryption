@@ -55,7 +55,7 @@ public final class App {
             encryptedMessageBinaryComplHomo.add(new BigDecimal(bi));
         }
 
-        Decrypt decrypt = new Decrypt(keygenComplHomo1.getPrivateKey(), encryptedMessageBinaryComplHomo ,encrypt.getvalueBinaryArrayComplHomo());
+        Decrypt decrypt = new Decrypt(keygenComplHomo1.getPrivateKey(), encryptedMessageBinaryComplHomo ,encrypt.getvalueBinaryArrayComplHomo(),keygenComplHomo1.getPrivateKey_p());
 
         //Decrypt decrypt = new Decrypt(keys.getPrivateKey(), encrypt.getValueBinaryArray(),encrypt.getvalueBinaryArrayComplHomo());
         //Decrypt decrypt2 = new Decrypt(keys.getPrivateKey(), encrypt2.getValueBinaryArray());
