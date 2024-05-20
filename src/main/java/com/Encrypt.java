@@ -26,18 +26,20 @@ public class Encrypt {
         ArrayList<BigInteger> encryptedMessageBuilder = new ArrayList<>();
         ArrayList<BigDecimal[]> encryptedMessageBuilder1 = new ArrayList<>();
 
-        Integer precision = (int) Math.ceil(Math.log(Parameters.theta)) + 3;
+        //Integer precision = (int) Math.ceil(Math.log(Parameters.theta)) + 3;
+        Integer precision = (int) Math.ceil(Math.log(Parameters.theta + 1 )/ (Math.log(2)) +3 ) ;
         BigDecimal[] vectz = new BigDecimal[Parameters.Theta];
 
         for (int i = Integer.SIZE - 1; i >= 0; i--) {
             int bit = message.testBit(i) ? 1 : 0;
             BigInteger encryptedBit = encryptBit(bit, privateKey, publicKey);
+            //System.out.println(encryptedBit);
             encryptedMessageBuilder.add(encryptedBit);
 
             for (int j = 0; j < publickeyComplHomo.length; j++) {
                 vectz[j] = (publickeyComplHomo[j].multiply(new BigDecimal(encryptedBit))).remainder(BigDecimal.valueOf(2));
-                vectz[j] = vectz[j].setScale(precision , BigDecimal.ROUND_DOWN);
-                //System.out.println(vectz[j]);
+                vectz[j] = vectz[j].setScale(precision, BigDecimal.ROUND_DOWN); 
+                //System.out.println("z = " + vectz[j]);
             }
             
             encryptedMessageBuilder1.add(vectz.clone());
@@ -47,6 +49,8 @@ public class Encrypt {
         this.valueBinaryArrayComplHomo = encryptedMessageBuilder1;
 
     }
+
+    
 
     public BigInteger encryptBit(int bit, BigInteger privateKey, BigInteger[] publicKey) {
         Random random = new Random();
@@ -113,3 +117,4 @@ public class Encrypt {
     }
 
 }
+
